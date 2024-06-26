@@ -1,0 +1,6 @@
+[submodule "Chisel-Global-Service-Configs"]
+	path = Chisel-Global-Service-Configs
+	url = https://github.com/wenbo-yang/Chisel-Global-Service-Configs.git
+[submodule "Chisel-Global-Common-Libraries"]
+	path = Chisel-Global-Common-Libraries
+	url = https://github.com/wenbo-yang/Chisel-Global-Common-Libraries.git
