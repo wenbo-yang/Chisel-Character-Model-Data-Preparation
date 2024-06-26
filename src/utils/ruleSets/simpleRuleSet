@@ -1,8 +1,0 @@
-import { Config } from "../../config";
-import { RuleSet } from "../../types/ruleSet";
-
-export class SimpleRuleSet extends RuleSet {
-    constructor(config?: Config) {
-        super(config);
-    }
-}

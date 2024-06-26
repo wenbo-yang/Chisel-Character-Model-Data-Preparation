@@ -1,9 +1,9 @@
 import * as staticServiceConfig from '../configs/service.config.json';
 import * as globalServicePortMappings from '../Chisel-Global-Service-Configs/configs/globalServicePortMappings.json';
-import { IImagePreprocessingServiceConfig } from './types/imagePreprocessorTypes';
+import { IDataPreparationServiceConfig } from './types/dataPreparerTypes';
 import { IServiceConfig, IServicePorts } from '../Chisel-Global-Common-Libraries/src/types/commonTypes';
 
-export class ImagePreprocessingServiceConfig implements IImagePreprocessingServiceConfig {
+export class DataPreparationServiceConfig implements IDataPreparationServiceConfig {
     private serviceConfig: IServiceConfig;
     private globalServicePortMappings: any;
 

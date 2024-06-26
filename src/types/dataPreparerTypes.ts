@@ -1,6 +1,6 @@
 import { COMPRESSIONTYPE, IMAGEDATATYPE, IServicePorts, Point } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
 
-export interface IImagePreprocessingServiceConfig {
+export interface IDataPreparationServiceConfig {
     grayScaleWhiteThreshold: number;
     shortName: string;
     useGPU: boolean;
@@ -8,7 +8,7 @@ export interface IImagePreprocessingServiceConfig {
     servicePorts: IServicePorts;
 }
 
-export interface ImagePreprocessRequestBody {
+export interface DataPreparationRequestBody {
     originalImage: string;
     originalImageType: IMAGEDATATYPE;
     inputCompression: COMPRESSIONTYPE;
@@ -18,8 +18,8 @@ export interface ImagePreprocessRequestBody {
     outputWidth: number;
 }
 
-export interface ImagePreprocessingResponseBody {
-    processedImages: ProcessedImage[];
+export interface DataPreparationResponseBody {
+    preparedData: PreparedData[];
 }
 
 export interface BoundingRect {
@@ -27,25 +27,25 @@ export interface BoundingRect {
     bottomRight: Point;
 }
 
-export enum PREDEFINEDPROCESSOINGMETHOD {
-    SHRINKED = 'SHRINKED',
-    EXPANDED = 'EXPANDED',
-    MIRRORED = 'MIRRORED',
-    BLURRED = 'BLURRED',
+export enum DATAPREPARATIONMETHODS {
+    SKELETON = 'SKELETON',
+    PERIMETER = 'PERIMETER',
+    BOLDSTROKE = 'BOLDSTROKE',
+    TILTED = 'TILTED',
     OTHER = 'OTHER',
 }
 
-export interface ImageDesciption {
-    description: PREDEFINEDPROCESSOINGMETHOD;
+export interface PreparedDataDesciption {
+    description: DATAPREPARATIONMETHODS;
     otherDescription?: string;
 }
 
-export interface ProcessedImage {
-    processedImageType: IMAGEDATATYPE;
-    processedImageCompression: COMPRESSIONTYPE;
-    processedImage: string;
-    processedImageDescription: ImageDesciption[];
-    processedImageHeight: number;
-    processedImageWidth: number;
+export interface PreparedData {
+    preparedDataType: IMAGEDATATYPE;
+    preparedDataCompression: COMPRESSIONTYPE;
+    preparedData: string;
+    preparedDataDescription: PreparedDataDesciption[];
+    preparedDataHeight: number;
+    preparedDataWidth: number;
     originalBoundingRect: BoundingRect; // topleft is the offset from original image
 }

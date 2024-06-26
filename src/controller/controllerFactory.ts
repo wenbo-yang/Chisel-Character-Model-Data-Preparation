@@ -1,9 +1,9 @@
-import { ImagePreprocessingServiceConfig } from '../config';
-import { IImagePreprocessingServiceConfig } from '../types/imagePreprocessorTypes';
-import { ImagePreprocessingServiceController } from './imagePreprocessorController';
+import { DataPreparationServiceConfig } from '../config';
+import { IDataPreparationServiceConfig } from '../types/dataPreparerTypes';
+import { DataPreparationServiceController } from './dataPreparerController';
 
 export class ControllerFactory {
-    static makeImagePreprocessingServiceController(config?: IImagePreprocessingServiceConfig): ImagePreprocessingServiceController {
-        return new ImagePreprocessingServiceController(config || new ImagePreprocessingServiceConfig());
+    static makeDataPreparationServiceController(config?: IDataPreparationServiceConfig): DataPreparationServiceController {
+        return new DataPreparationServiceController(config || new DataPreparationServiceConfig());
     }
 }

@@ -2,12 +2,12 @@ import express from 'express';
 import http from 'http';
 import https from 'https';
 import fs from 'fs';
-import { ImagePreprocessingServiceConfig } from './config';
+import { DataPreparationServiceConfig } from './config';
 import { ControllerFactory } from './controller/controllerFactory';
 import { processError } from '../Chisel-Global-Common-Libraries//src/lib/error';
 import { HttpStatusCode } from 'axios';
 
-const config = new ImagePreprocessingServiceConfig();
+const config = new DataPreparationServiceConfig();
 
 const servicePorts = config.servicePorts;
 
@@ -27,11 +27,11 @@ app.get('/healthCheck', (req, res) => {
     res.send('i am healthy!!!');
 });
 
-app.post('/process', async (req, res) => {
+app.post('/prepare', async (req, res) => {
     try {
-        const imagePreprocessor = ControllerFactory.makeImagePreprocessingServiceController(config);
-        const processedImages = await imagePreprocessor.process(req);
-        res.send(processedImages);
+        const dataPreparer = ControllerFactory.makeDataPreparationServiceController(config);
+        const preparedDatas = await dataPreparer.process(req);
+        res.send(preparedDatas);
     } catch (e) {
         processError(e, res);
     }
