@@ -1,4 +1,4 @@
 {
-    "serviceName": "char-model-prepare",
+    "serviceName": "char-data-preparer",
     "shortName": "c-cm-prepare"
 }
