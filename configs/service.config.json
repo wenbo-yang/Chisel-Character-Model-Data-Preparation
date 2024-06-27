@@ -1,4 +1,9 @@
 {
     "serviceName": "char-data-preparer",
-    "shortName": "c-cm-prepare"
+    "shortName": "c-cm-prepare",
+    "skeletonizerUrl": {
+        "development": "https://localhost:3000",
+        "local": "https://localhost:3000",
+        "production": "https://localhost:3000"
+    }
 }

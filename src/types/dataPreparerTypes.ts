@@ -1,4 +1,5 @@
-import { COMPRESSIONTYPE, IMAGEDATATYPE, IServicePorts, Point } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
+import Jimp from 'jimp';
+import { BoundingRect, COMPRESSIONTYPE, IMAGEDATATYPE, IServicePorts, Point } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
 
 export interface IDataPreparationServiceConfig {
     grayScaleWhiteThreshold: number;
@@ -18,13 +19,12 @@ export interface DataPreparationRequestBody {
     outputWidth: number;
 }
 
-export interface DataPreparationResponseBody {
-    preparedData: PreparedData[];
+export interface ISkeletonizerClient {
+    skeletonize(image: Jimp, outputHeight: number, outputWidth: number): Promise<Jimp>;
 }
 
-export interface BoundingRect {
-    topleft: Point;
-    bottomRight: Point;
+export interface DataPreparationResponseBody {
+    preparedData: PreparedData[];
 }
 
 export enum DATAPREPARATIONMETHODS {
@@ -32,6 +32,7 @@ export enum DATAPREPARATIONMETHODS {
     PERIMETER = 'PERIMETER',
     BOLDSTROKE = 'BOLDSTROKE',
     TILTED = 'TILTED',
+    ORIGINAL = 'ORIGINAL',
     OTHER = 'OTHER',
 }
 
