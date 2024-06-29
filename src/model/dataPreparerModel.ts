@@ -4,8 +4,9 @@ import { findBoundingRect, resizeImage } from '../../Chisel-Global-Common-Librar
 import { SkeletonizerClient } from '../client/skeletonizerClient';
 import { gzip, ungzip } from 'node-gzip';
 import Jimp from 'jimp';
-import { ColorActionName } from '@jimp/plugin-color/index';
+
 import { DataPreparationServiceConfig } from '../config';
+import { ColorActionName } from '@jimp/plugin-color';
 
 export class DataPreparerModel {
     private config: IDataPreparationServiceConfig;
@@ -22,7 +23,8 @@ export class DataPreparerModel {
         }
 
         const originalImage = await this.getJimpImage(body);
-        const filteredImage = originalImage.color([{ apply: ColorActionName.DESATURATE, params: [90] }]).contrast(1);
+
+        const filteredImage = originalImage.color([{ apply: ColorActionName.SATURATE, params: [90] }]).contrast(1);
         const boundingRect = findBoundingRect(filteredImage, this.config.grayScaleWhiteThreshold);
         const resizedImage = resizeImage(filteredImage, boundingRect, 1, body.outputHeight, body.outputWidth);
         const skeleton = await this.getSkeleton(filteredImage, body.outputHeight, body.outputWidth);
@@ -31,13 +33,13 @@ export class DataPreparerModel {
         const tiltedBoldStrokeImages = await this.tilt(boldStroke, {description: DATAPREPARATIONMETHODS.BOLDSTROKE}, body.outputCompression, boundingRect, body.outputHeight, body.outputWidth);
 
         const preparedData: PreparedData[] = [];
-        preparedData.concat(await this.convertJimpImageToPreparedData(resizedImage, [{description: DATAPREPARATIONMETHODS.ORIGINAL}], body.outputCompression, boundingRect, body.outputHeight, body.outputWidth));
-        preparedData.concat(await this.convertJimpImageToPreparedData(skeleton, [{description: DATAPREPARATIONMETHODS.SKELETON}], body.outputCompression, boundingRect, body.outputHeight, body.outputWidth));
-        preparedData.concat(await this.convertJimpImageToPreparedData(boldStroke, [{description: DATAPREPARATIONMETHODS.BOLDSTROKE}], body.outputCompression, boundingRect, body.outputHeight, body.outputWidth));
-        preparedData.concat(await tiltedSkeletonImages);
-        preparedData.concat(await tiltedBoldStrokeImages);
+        preparedData.push(await this.convertJimpImageToPreparedData(resizedImage, [{description: DATAPREPARATIONMETHODS.ORIGINAL}], body.outputCompression, boundingRect, body.outputHeight, body.outputWidth));
+        preparedData.push(await this.convertJimpImageToPreparedData(skeleton, [{description: DATAPREPARATIONMETHODS.SKELETON}], body.outputCompression, boundingRect, body.outputHeight, body.outputWidth));
+        preparedData.push(await this.convertJimpImageToPreparedData(boldStroke, [{description: DATAPREPARATIONMETHODS.BOLDSTROKE}], body.outputCompression, boundingRect, body.outputHeight, body.outputWidth));
+        
+        const returnData = preparedData.concat(tiltedSkeletonImages).concat(tiltedBoldStrokeImages);
 
-        return preparedData;
+        return returnData;
     }
     
     private async tilt(image: Jimp, description: PreparedDataDesciption, outputCompression: COMPRESSIONTYPE, boundingRect: BoundingRect, outputHeight: number, outputWidth: number): Promise<PreparedData[]> {

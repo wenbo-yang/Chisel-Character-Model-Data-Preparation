@@ -36,6 +36,7 @@
         "typescript": "^5.2.2"
     },
     "dependencies": {
+        "@jimp/plugin-color": "0.22.12",
         "@types/bmp-js": "0.1.2",
         "axios": "1.6.2",
         "bmp-js": "0.1.0",

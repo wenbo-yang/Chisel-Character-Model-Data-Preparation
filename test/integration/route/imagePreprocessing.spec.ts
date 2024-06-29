@@ -2,7 +2,6 @@ import { httpsUrl } from '../utils';
 import axios, { HttpStatusCode } from 'axios';
 import https from 'https';
 import fs from 'fs/promises';
-import { ImagePreprocessRequestBody } from '../../../src/types/dataPreparerTypes';
 import { COMPRESSIONTYPE, IMAGEDATATYPE } from '../../../Chisel-Global-Common-Libraries/src/types/commonTypes';
 import Jimp from 'jimp';
 import { gzip } from 'node-gzip';
@@ -23,14 +22,14 @@ describe('skeletonize request', () => {
     });
 
     describe('POST /prepare', () => {
-        const processImageUrl = httpsUrl + '/prepare';
+        const prepareDataUrl = httpsUrl + '/prepare';
 
         it('should response with 200 with calling prepare with plain image', async () => {
-            const sampleImageUrl = './test/integration/data/running_man_image_5.png';
+            const sampleImageUrl = './test/integration/data/zou_character.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
 
-            const response = await axiosClient.post(processImageUrl, {
+            const response = await axiosClient.post(prepareDataUrl, {
                 originalImage: arrayBuffer,
                 originalImageType: IMAGEDATATYPE.PNG,
                 inputCompression: COMPRESSIONTYPE.PLAIN,
@@ -41,8 +40,7 @@ describe('skeletonize request', () => {
             });
 
             expect(response.status).toBe(HttpStatusCode.Ok);
-            const image = await Jimp.read(Buffer.from(response.data[0].preparedData, 'base64'));
-            await image.writeAsync('./test/integration/data/running_man_image_5_output_test.png');
+            expect(response.data.length).toBeGreaterThan(0);
         });
 
     });

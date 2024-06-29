@@ -13,7 +13,7 @@ export class DataPreparationServiceController {
         this.dataPreparerModel = dataPreparerModel || new DataPreparerModel(this.config);
     }
 
-    public async process(req: Request<{}, any, any, ParsedQs, Record<string, any>>): Promise<PreparedData[]> {
+    public async prepare(req: Request<{}, any, any, ParsedQs, Record<string, any>>): Promise<PreparedData[]> {
         const body = req.body as DataPreparationRequestBody;
         return await this.dataPreparerModel.prepare(body);
     }

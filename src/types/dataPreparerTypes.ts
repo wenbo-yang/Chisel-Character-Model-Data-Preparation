@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BoundingRect, COMPRESSIONTYPE, IMAGEDATATYPE, IServicePorts, Point } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
+import { BoundingRect, COMPRESSIONTYPE, IMAGEDATATYPE, IServicePorts } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
 
 export interface IDataPreparationServiceConfig {
     grayScaleWhiteThreshold: number;
