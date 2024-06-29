@@ -9,6 +9,6 @@ export class SkeletonizerClient implements ISkeletonizerClient {
     }
 
     public async skeletonize(image: Jimp, outputHeight: number, outputWidth: number): Promise<Jimp> {
-        throw new Error('not implemented');
+        return new Jimp(image); // stub
     }
 }
