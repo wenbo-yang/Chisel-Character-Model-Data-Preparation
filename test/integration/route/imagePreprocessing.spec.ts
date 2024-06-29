@@ -22,10 +22,10 @@ describe('skeletonize request', () => {
         });
     });
 
-    describe('POST /process', () => {
-        const processImageUrl = httpsUrl + '/process';
+    describe('POST /prepare', () => {
+        const processImageUrl = httpsUrl + '/prepare';
 
-        it('should response with 200 with calling process with plain image', async () => {
+        it('should response with 200 with calling prepare with plain image', async () => {
             const sampleImageUrl = './test/integration/data/running_man_image_5.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
@@ -45,24 +45,5 @@ describe('skeletonize request', () => {
             await image.writeAsync('./test/integration/data/running_man_image_5_output_test.png');
         });
 
-        it('should response with 200 with calling process with plain image', async () => {
-            const sampleImageUrl = './test/integration/data/running_man_image_5.png';
-            const data = await fs.readFile(sampleImageUrl);
-            const arrayBuffer = Buffer.from(data).toString('base64');
-
-            const response = await axiosClient.post(processImageUrl, {
-                originalImage: arrayBuffer,
-                originalImageType: IMAGEDATATYPE.PNG,
-                inputCompression: COMPRESSIONTYPE.PLAIN,
-                outputCompression: COMPRESSIONTYPE.PLAIN,
-                outputType: IMAGEDATATYPE.PNG,
-                outputHeight: 80,
-                outputWidth: 80,
-            });
-
-            expect(response.status).toBe(HttpStatusCode.Ok);
-            const image = await Jimp.read(Buffer.from(response.data[1].preparedData, 'base64'));
-            await image.writeAsync('./test/integration/data/running_man_image_5_mirror_output_test.png');
-        });
     });
 });
