@@ -133,6 +133,9 @@ dist
 # package-lock
 package-lock.json
 
+# ignore mac
+*.DS_Store
+
 # ignore test data
 *test.bmp
 *test.json

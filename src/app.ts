@@ -30,8 +30,8 @@ app.get('/healthCheck', (req, res) => {
 app.post('/prepare', async (req, res) => {
     try {
         const dataPreparer = ControllerFactory.makeDataPreparationServiceController(config);
-        const preparedDatas = await dataPreparer.prepare(req);
-        res.send(preparedDatas);
+        const preparedData = await dataPreparer.prepare(req);
+        res.send(preparedData);
     } catch (e) {
         processError(e, res);
     }

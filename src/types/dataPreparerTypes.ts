@@ -23,10 +23,6 @@ export interface ISkeletonizerClient {
     skeletonize(image: Jimp, outputHeight: number, outputWidth: number): Promise<Jimp>;
 }
 
-export interface DataPreparationResponseBody {
-    preparedData: PreparedData[];
-}
-
 export enum DATAPREPARATIONMETHODS {
     SKELETON = 'SKELETON',
     PERIMETER = 'PERIMETER',

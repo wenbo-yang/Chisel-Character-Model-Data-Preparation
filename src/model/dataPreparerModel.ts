@@ -24,13 +24,13 @@ export class DataPreparerModel {
 
         const originalImage = await this.getJimpImage(body);
 
-        const filteredImage = originalImage.color([{ apply: ColorActionName.SATURATE, params: [90] }]).contrast(1);
-        const boundingRect = findBoundingRect(filteredImage, this.config.grayScaleWhiteThreshold);
-        const resizedImage = resizeImage(filteredImage, boundingRect, 1, body.outputHeight, body.outputWidth);
-        const skeleton = await this.getSkeleton(filteredImage, body.outputHeight, body.outputWidth);
+        const denoisedImage = originalImage.color([{ apply: ColorActionName.SATURATE, params: [90] }]).contrast(1);
+        const boundingRect = findBoundingRect(denoisedImage, this.config.grayScaleWhiteThreshold);
+        const resizedImage = resizeImage(denoisedImage, boundingRect, 1, body.outputHeight, body.outputWidth);
+        const skeleton = await this.getSkeleton(denoisedImage, body.outputHeight, body.outputWidth);
         const boldStroke = this.boldStroke(skeleton);
-        const tiltedSkeletonImages = await this.tilt(skeleton, {description: DATAPREPARATIONMETHODS.SKELETON}, body.outputCompression, boundingRect, body.outputHeight, body.outputWidth);
-        const tiltedBoldStrokeImages = await this.tilt(boldStroke, {description: DATAPREPARATIONMETHODS.BOLDSTROKE}, body.outputCompression, boundingRect, body.outputHeight, body.outputWidth);
+        const tiltedSkeletonImages = await this.tilt(skeleton, {description: DATAPREPARATIONMETHODS.SKELETON}, body.outputCompression, body.outputHeight, body.outputWidth);
+        const tiltedBoldStrokeImages = await this.tilt(boldStroke, {description: DATAPREPARATIONMETHODS.BOLDSTROKE}, body.outputCompression, body.outputHeight, body.outputWidth);
 
         const preparedData: PreparedData[] = [];
         preparedData.push(await this.convertJimpImageToPreparedData(resizedImage, [{description: DATAPREPARATIONMETHODS.ORIGINAL}], body.outputCompression, boundingRect, body.outputHeight, body.outputWidth));
@@ -42,20 +42,29 @@ export class DataPreparerModel {
         return returnData;
     }
     
-    private async tilt(image: Jimp, description: PreparedDataDesciption, outputCompression: COMPRESSIONTYPE, boundingRect: BoundingRect, outputHeight: number, outputWidth: number): Promise<PreparedData[]> {
+    private async tilt(image: Jimp, description: PreparedDataDesciption, outputCompression: COMPRESSIONTYPE, outputHeight: number, outputWidth: number): Promise<PreparedData[]> {
         const leftTilt = new Jimp(image);
         const rightTilt = new Jimp(image);
 
         const preparedData: PreparedData[] = [];
-        preparedData.push(await this.convertJimpImageToPreparedData(leftTilt.rotate(5), [{description: description.description}, {description: DATAPREPARATIONMETHODS.TILTED}], outputCompression, boundingRect, outputHeight, outputWidth));
-        preparedData.push(await this.convertJimpImageToPreparedData(leftTilt.rotate(5), [{description: description.description}, {description: DATAPREPARATIONMETHODS.TILTED}], outputCompression, boundingRect, outputHeight, outputWidth));
-        preparedData.push(await this.convertJimpImageToPreparedData(leftTilt.rotate(5), [{description: description.description}, {description: DATAPREPARATIONMETHODS.TILTED}], outputCompression, boundingRect, outputHeight, outputWidth));
-        preparedData.push(await this.convertJimpImageToPreparedData(leftTilt.rotate(5), [{description: description.description}, {description: DATAPREPARATIONMETHODS.TILTED}], outputCompression, boundingRect, outputHeight, outputWidth));
-    
-        preparedData.push(await this.convertJimpImageToPreparedData(rightTilt.rotate(-5), [{description: description.description}, {description: DATAPREPARATIONMETHODS.TILTED}], outputCompression, boundingRect, outputHeight, outputWidth));
-        preparedData.push(await this.convertJimpImageToPreparedData(rightTilt.rotate(-5), [{description: description.description}, {description: DATAPREPARATIONMETHODS.TILTED}], outputCompression, boundingRect, outputHeight, outputWidth));
-        preparedData.push(await this.convertJimpImageToPreparedData(rightTilt.rotate(-5), [{description: description.description}, {description: DATAPREPARATIONMETHODS.TILTED}], outputCompression, boundingRect, outputHeight, outputWidth));
-        preparedData.push(await this.convertJimpImageToPreparedData(rightTilt.rotate(-5), [{description: description.description}, {description: DATAPREPARATIONMETHODS.TILTED}], outputCompression, boundingRect, outputHeight, outputWidth));
+
+        for(let i = 0; i < 4; i++) {
+            leftTilt.rotate(5);
+            const compositeImageLeft = new Jimp(leftTilt.getWidth(), leftTilt.getHeight(), 'white');
+            compositeImageLeft.blit(leftTilt, 0, 0);
+            const boundingRect = findBoundingRect(compositeImageLeft, this.config.grayScaleWhiteThreshold);
+            const resizedImage = resizeImage(compositeImageLeft, boundingRect, 1, outputHeight, outputWidth);
+            preparedData.push(await this.convertJimpImageToPreparedData(resizedImage, [{description: description.description}, {description: DATAPREPARATIONMETHODS.TILTED}], outputCompression, boundingRect, outputHeight, outputWidth));
+        }
+        
+        for(let i = 0; i < 4; i++) {
+            rightTilt.rotate(-5);
+            const compositeImageRight = new Jimp(leftTilt.getWidth(), rightTilt.getHeight(), 'white');
+            compositeImageRight.blit(rightTilt, 0, 0);
+            const boundingRect = findBoundingRect(compositeImageRight, this.config.grayScaleWhiteThreshold);
+            const resizedImage = resizeImage(compositeImageRight, boundingRect, 1, outputHeight, outputWidth);
+            preparedData.push(await this.convertJimpImageToPreparedData(resizedImage, [{description: description.description}, {description: DATAPREPARATIONMETHODS.TILTED}], outputCompression, boundingRect, outputHeight, outputWidth));
+        }
 
         return preparedData;
     }
@@ -66,7 +75,7 @@ export class DataPreparerModel {
     }
 
     private async convertJimpImageToPreparedData(image: Jimp, descriptions: PreparedDataDesciption[], compression: COMPRESSIONTYPE, boundingRect: BoundingRect, outputHeight: number, outputWidth: number): Promise<PreparedData> {
-        const preparedData = compression === COMPRESSIONTYPE.GZIP ? (await gzip(await image.getBufferAsync(Jimp.MIME_PNG))).toString('base64') : await image.getBase64Async(Jimp.MIME_PNG);
+        const preparedData = compression === COMPRESSIONTYPE.GZIP ? (await gzip(await image.getBufferAsync(Jimp.MIME_PNG))).toString('base64') : (await image.getBufferAsync(Jimp.MIME_PNG)).toString('base64');
 
         return {
             preparedDataType: IMAGEDATATYPE.PNG,
@@ -79,8 +88,8 @@ export class DataPreparerModel {
         } as PreparedData;
     }
 
-    private async getSkeleton(filteredImage: Jimp, outputHeight: number, outputWidth: number): Promise<Jimp> {
-        return await this.skeletonizer.skeletonize(filteredImage, outputHeight, outputWidth);
+    private async getSkeleton(image: Jimp, outputHeight: number, outputWidth: number): Promise<Jimp> {
+        return await this.skeletonizer.skeletonize(image, outputHeight, outputWidth);
     }
 
     private async getJimpImage(body: DataPreparationRequestBody): Promise<Jimp> {
