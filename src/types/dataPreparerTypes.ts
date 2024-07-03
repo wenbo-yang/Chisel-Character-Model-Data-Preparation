@@ -5,6 +5,7 @@ export interface IDataPreparationServiceConfig {
     grayScaleWhiteThreshold: number;
     shortName: string;
     useGPU: boolean;
+    useMockSkeletonizer: boolean;
     env: string;
     servicePorts: IServicePorts;
 }

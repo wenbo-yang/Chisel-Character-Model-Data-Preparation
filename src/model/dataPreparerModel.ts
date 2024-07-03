@@ -27,16 +27,15 @@ export class DataPreparerModel {
         const denoisedImage = originalImage.color([{ apply: ColorActionName.SATURATE, params: [90] }]).contrast(1);
         const boundingRect = findBoundingRect(denoisedImage, this.config.grayScaleWhiteThreshold);
         const resizedImage = resizeImage(denoisedImage, boundingRect, 1, body.outputHeight, body.outputWidth);
+        
         const skeleton = await this.getSkeleton(denoisedImage, body.outputHeight, body.outputWidth);
         const boldStroke = this.boldStroke(skeleton);
         const tiltedSkeletonImages = await this.tilt(skeleton, {description: DATAPREPARATIONMETHODS.SKELETON}, body.outputCompression, body.outputHeight, body.outputWidth);
         const tiltedBoldStrokeImages = await this.tilt(boldStroke, {description: DATAPREPARATIONMETHODS.BOLDSTROKE}, body.outputCompression, body.outputHeight, body.outputWidth);
-
         const preparedData: PreparedData[] = [];
         preparedData.push(await this.convertJimpImageToPreparedData(resizedImage, [{description: DATAPREPARATIONMETHODS.ORIGINAL}], body.outputCompression, boundingRect, body.outputHeight, body.outputWidth));
         preparedData.push(await this.convertJimpImageToPreparedData(skeleton, [{description: DATAPREPARATIONMETHODS.SKELETON}], body.outputCompression, boundingRect, body.outputHeight, body.outputWidth));
         preparedData.push(await this.convertJimpImageToPreparedData(boldStroke, [{description: DATAPREPARATIONMETHODS.BOLDSTROKE}], body.outputCompression, boundingRect, body.outputHeight, body.outputWidth));
-        
         const returnData = preparedData.concat(tiltedSkeletonImages).concat(tiltedBoldStrokeImages);
 
         return returnData;
@@ -49,7 +48,7 @@ export class DataPreparerModel {
         const preparedData: PreparedData[] = [];
 
         for(let i = 0; i < 4; i++) {
-            leftTilt.rotate(5);
+            leftTilt.rotate(3);
             const compositeImageLeft = new Jimp(leftTilt.getWidth(), leftTilt.getHeight(), 'white');
             compositeImageLeft.blit(leftTilt, 0, 0);
             const boundingRect = findBoundingRect(compositeImageLeft, this.config.grayScaleWhiteThreshold);
@@ -58,8 +57,8 @@ export class DataPreparerModel {
         }
         
         for(let i = 0; i < 4; i++) {
-            rightTilt.rotate(-5);
-            const compositeImageRight = new Jimp(leftTilt.getWidth(), rightTilt.getHeight(), 'white');
+            rightTilt.rotate(-3);
+            const compositeImageRight = new Jimp(rightTilt.getWidth(), rightTilt.getHeight(), 'white');
             compositeImageRight.blit(rightTilt, 0, 0);
             const boundingRect = findBoundingRect(compositeImageRight, this.config.grayScaleWhiteThreshold);
             const resizedImage = resizeImage(compositeImageRight, boundingRect, 1, outputHeight, outputWidth);
@@ -71,7 +70,7 @@ export class DataPreparerModel {
 
     private boldStroke(image: Jimp): Jimp {
         const boldStroke = new Jimp(image);
-        return boldStroke.blur(1).contrast(1);
+        return boldStroke.blur(1);
     }
 
     private async convertJimpImageToPreparedData(image: Jimp, descriptions: PreparedDataDesciption[], compression: COMPRESSIONTYPE, boundingRect: BoundingRect, outputHeight: number, outputWidth: number): Promise<PreparedData> {

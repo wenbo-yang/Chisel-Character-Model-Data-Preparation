@@ -11,6 +11,10 @@ export class DataPreparationServiceConfig implements IDataPreparationServiceConf
         this.serviceConfig = serviceConfig || staticServiceConfig;
         this.globalServicePortMappings = parsedGlobalServicePortMappings || globalServicePortMappings;
     }
+    
+    public get useMockSkeletonizer() {
+        return true
+    }
 
     public get grayScaleWhiteThreshold() {
         return 250;

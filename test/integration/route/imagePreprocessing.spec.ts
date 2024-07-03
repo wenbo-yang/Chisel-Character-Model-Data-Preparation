@@ -36,8 +36,8 @@ describe('skeletonize request', () => {
                 inputCompression: COMPRESSIONTYPE.PLAIN,
                 outputCompression: COMPRESSIONTYPE.PLAIN,
                 outputType: IMAGEDATATYPE.PNG,
-                outputHeight: 80,
-                outputWidth: 80,
+                outputHeight: 50,
+                outputWidth: 50,
             });
 
             expect(response.status).toBe(HttpStatusCode.Ok);
@@ -55,15 +55,15 @@ describe('skeletonize request', () => {
                 inputCompression: COMPRESSIONTYPE.PLAIN,
                 outputCompression: COMPRESSIONTYPE.PLAIN,
                 outputType: IMAGEDATATYPE.PNG,
-                outputHeight: 80,
-                outputWidth: 80,
+                outputHeight: 50,
+                outputWidth: 50,
             });
 
             expect(response.status).toBe(HttpStatusCode.Ok);
             expect(response.data.length).toEqual(19);
 
             for(let i = 0; i < response.data.length; i++) {
-                const responseData: PreparedData = response.data[4];
+                const responseData: PreparedData = response.data[i];
                 const buffer = Buffer.from(responseData.preparedData, 'base64');
                 const image = await Jimp.read(buffer);
                 expect(Jimp.intToRGBA(image.getPixelColor(0, 0))).toEqual({r: 255, g: 255, b: 255, a:255});
